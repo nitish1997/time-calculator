@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Time Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calculator">
+        <h1>Date Time Calculator</h1>
+
+        <div class="mode-selection">
+            <label><input type="radio" name="mode" value="duration" checked> Add/Subtract Duration</label>
+            <label><input type="radio" name="mode" value="difference"> Calculate Difference</label>
+        </div>
+
+        <div id="duration-calculator">
+            <div class="input-group">
+                <label for="base-datetime">Base Date-Time</label>
+                <input type="datetime-local" id="base-datetime">
+            </div>
+            <div class="input-group">
+                <label for="days">Days</label>
+                <input type="number" id="days" min="0" value="0">
+            </div>
+            <div class="input-group">
+                <label for="hours">Hours</label>
+                <input type="number" id="hours" min="0" value="0">
+            </div>
+            <div class="input-group">
+                <label for="minutes">Minutes</label>
+                <input type="number" id="minutes" min="0" value="0">
+            </div>
+            <div class="operation">
+                <label><input type="radio" name="operation" value="add" checked> Add</label>
+                <label><input type="radio" name="operation" value="subtract"> Subtract</label>
+            </div>
+            <button id="calculate-duration">Calculate</button>
+            <div class="result">
+                <h2>New Date and Time</h2>
+                <p id="duration-result-display"></p>
+            </div>
+        </div>
+
+        <div id="difference-calculator" style="display: none;">
+            <div class="input-group">
+                <label for="start-datetime">Start Date-Time</label>
+                <input type="datetime-local" id="start-datetime">
+            </div>
+            <div class="input-group">
+                <label for="end-datetime">End Date-Time</label>
+                <input type="datetime-local" id="end-datetime">
+            </div>
+            <button id="calculate-difference">Calculate Difference</button>
+            <div class="result">
+                <h2>Result</h2>
+                <p id="difference-result-display"></p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
