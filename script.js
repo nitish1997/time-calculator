@@ -1,84 +1,61 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const modeRadios = document.querySelectorAll('input[name="mode"]');
-    const durationCalculator = document.getElementById('duration-calculator');
-    const differenceCalculator = document.getElementById('difference-calculator');
 
-    const calculateDurationBtn = document.getElementById('calculate-duration');
-    const durationResultDisplay = document.getElementById('duration-result-display');
+    const calculateBtn = document.getElementById('calculate-btn');
+    const differenceDisplay = document.getElementById('difference-display');
+    const finalResultDisplay = document.getElementById('final-result-display');
 
-    const calculateDifferenceBtn = document.getElementById('calculate-difference');
-    const differenceResultDisplay = document.getElementById('difference-result-display');
+    calculateBtn.addEventListener('click', () => {
 
-    // Mode switching
-    modeRadios.forEach(radio => {
-        radio.addEventListener('change', () => {
-            if (radio.value === 'duration') {
-                durationCalculator.style.display = 'block';
-                differenceCalculator.style.display = 'none';
-            } else {
-                durationCalculator.style.display = 'none';
-                differenceCalculator.style.display = 'block';
-            }
-        });
-    });
+        const correctDateTimeStr = document.getElementById('correct-datetime').value;
+        const incorrectDateTimeStr = document.getElementById('incorrect-datetime').value;
+        const incidentDateTimeStr = document.getElementById('incident-datetime').value;
 
-    // Duration Calculator Logic
-    calculateDurationBtn.addEventListener('click', () => {
-        const baseDateTime = document.getElementById('base-datetime').value;
-        const days = parseInt(document.getElementById('days').value) || 0;
-        const hours = parseInt(document.getElementById('hours').value) || 0;
-        const minutes = parseInt(document.getElementById('minutes').value) || 0;
-        const operation = document.querySelector('input[name="operation"]:checked').value;
-
-        if (!baseDateTime) {
-            durationResultDisplay.textContent = 'Please enter a valid base date and time.';
+        if (!correctDateTimeStr || !incorrectDateTimeStr || !incidentDateTimeStr) {
+            differenceDisplay.textContent = 'Please enter all date & time values.';
+            finalResultDisplay.textContent = '';
             return;
         }
 
-        const baseDate = new Date(baseDateTime);
-        let durationInMinutes = (days * 24 * 60) + (hours * 60) + minutes;
+        const correctDate = new Date(correctDateTimeStr);
+        const incorrectDate = new Date(incorrectDateTimeStr);
+        const incidentDate = new Date(incidentDateTimeStr);
 
-        if (operation === 'subtract') {
-            durationInMinutes *= -1;
-        }
+        // Difference between correct and incorrect CCTV time
+        const timeDifference = incorrectDate.getTime() - correctDate.getTime();
 
-        const newDate = new Date(baseDate.getTime() + durationInMinutes * 60000);
+        // Apply correction to incident time
+        const finalCorrectedDate = new Date(incidentDate.getTime() + timeDifference);
 
-        const year = newDate.getFullYear();
-        const month = String(newDate.getMonth() + 1).padStart(2, '0');
-        const day = String(newDate.getDate()).padStart(2, '0');
-        const newHours = String(newDate.getHours()).padStart(2, '0');
-        const newMinutes = String(newDate.getMinutes()).padStart(2, '0');
-        const newSeconds = String(newDate.getSeconds()).padStart(2, '0');
+        // Absolute difference breakdown
+        let diffMillis = Math.abs(timeDifference);
 
-        durationResultDisplay.textContent = `${day}/${month}/${year} ${newHours}:${newMinutes}:${newSeconds}`;
+        const days = Math.floor(diffMillis / (1000 * 60 * 60 * 24));
+        diffMillis %= (1000 * 60 * 60 * 24);
+
+        const hours = Math.floor(diffMillis / (1000 * 60 * 60));
+        diffMillis %= (1000 * 60 * 60);
+
+        const minutes = Math.floor(diffMillis / (1000 * 60));
+        diffMillis %= (1000 * 60);
+
+        const seconds = Math.floor(diffMillis / 1000);
+
+        const operation = timeDifference >= 0 ? '+' : '-';
+
+        differenceDisplay.textContent =
+            `${operation} ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+        // Format final corrected datetime
+        const year = finalCorrectedDate.getFullYear();
+        const month = String(finalCorrectedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(finalCorrectedDate.getDate()).padStart(2, '0');
+
+        const hrs = String(finalCorrectedDate.getHours()).padStart(2, '0');
+        const mins = String(finalCorrectedDate.getMinutes()).padStart(2, '0');
+        const secs = String(finalCorrectedDate.getSeconds()).padStart(2, '0');
+
+        finalResultDisplay.textContent =
+            `${day}/${month}/${year} ${hrs}:${mins}:${secs}`;
     });
 
-    // Difference Calculator Logic
-    calculateDifferenceBtn.addEventListener('click', () => {
-        const startDateTimeStr = document.getElementById('start-datetime').value;
-        const endDateTimeStr = document.getElementById('end-datetime').value;
-
-        if (!startDateTimeStr || !endDateTimeStr) {
-            differenceResultDisplay.textContent = 'Please enter both start and end date-times.';
-            return;
-        }
-
-        const startDate = new Date(startDateTimeStr);
-        const endDate = new Date(endDateTimeStr);
-
-        let diffInMillis = endDate.getTime() - startDate.getTime();
-        const sign = diffInMillis < 0 ? '-' : '';
-        diffInMillis = Math.abs(diffInMillis);
-
-        const days = Math.floor(diffInMillis / (1000 * 60 * 60 * 24));
-        diffInMillis %= (1000 * 60 * 60 * 24);
-        const hours = Math.floor(diffInMillis / (1000 * 60 * 60));
-        diffInMillis %= (1000 * 60 * 60);
-        const minutes = Math.floor(diffInMillis / (1000 * 60));
-        diffInMillis %= (1000 * 60);
-        const seconds = Math.floor(diffInMillis / 1000);
-
-        differenceResultDisplay.textContent = `${sign}${days}d ${hours}h ${minutes}m ${seconds}s`;
-    });
 });
